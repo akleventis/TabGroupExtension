@@ -8,6 +8,11 @@ function chromeStorageGet(result) {
     }
   });
 }
+
+//logic to get tabGropus as a promise!
+let getTabGroupsPromise = new Promise((resolve, reject) => {
+  resolve(chrome.storage.sync.get(['TABGROUPS']));
+});
 // variables to store objects for groups 1, 2, 3, and put in array to loop through later
 // for any associated tab group ids
 const groupIDArray = [{ GROUP1: {} }, { GROUP2: {} }, { GROUP3: {} }];
@@ -54,12 +59,18 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 const searchTerms = result.TABGROUPS[i][group].URL;
                 if (searchTermInUrl(url, searchTerms)) {
                   let match = false;
+                  //this loops through the tabGroupObj which is an object of all the tabGroups at the time this tab loaded
                   for (let j = 0; j < tabGroupObj.length; j++) {
-                    if (
-                      result.TABGROUPS[i][group] &&
-                      tab.groupId === -1 &&
-                      tabGroupObj[j].title === result.TABGROUPS[i][group].NAME
-                    ) {
+                    //This if statement finds the tabGroup in tabGroup object where its Id matches the currently loaded tabs
+                    // id, if the rule for this group number matches the title of the tab group do nothing 
+                    // and return completely here tab is in the right place
+                    if(tab.groupId !== -1 && tabGroupObj[j].id === tab.groupId && result.TABGROUPS[i][group]
+                      && tabGroupObj[j].title === result.TABGROUPS[i][group].NAME)  {
+                      return;
+                    }
+                    //this looks to to see if any tab groups already created match the the rule set and puts tab in that tab group.
+                    if (result.TABGROUPS[i][group]  && tabGroupObj[j].title === result.TABGROUPS[i][group].NAME) {
+                      console.log("this executed");
                       match = true;
                       chrome.tabs.group({
                         tabIds: tabId,

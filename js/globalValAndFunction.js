@@ -240,6 +240,7 @@ let saveButtonLogic =  (button, inputBox, isCheckedArray, checkedNameField, chec
     let matchingText = checkedUrlField[i].value;
     let matchingTextSplitComma = matchingText.split(',');
     let matchingTextRemoveSpace = matchingTextSplitComma.map((item) => item.trim());
+    let matchingTextRemoveEmpty = matchingTextRemoveSpace.filter((item) => item != '');
     console.log('this is matching text split by commas', matchingTextSplitComma);
     console.log('this is matching text with removed space', matchingTextRemoveSpace);
     if (isCheckedArray[i].checked) {
@@ -251,7 +252,7 @@ let saveButtonLogic =  (button, inputBox, isCheckedArray, checkedNameField, chec
           [groupNumber]: {
             COLOR: document.querySelectorAll('.box')[i].getAttribute('value'),
             NAME: checkedNameField[i].value,
-            URL: checkedUrlField[i].value.split(',').map((item) => item.trim()),
+            URL: matchingTextRemoveEmpty,
           },
         });
         toggleInputDisabled(checkedUrlField[i]);
